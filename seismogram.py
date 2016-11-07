@@ -3,7 +3,6 @@ import os
 import numpy as np
 from copy import deepcopy
 import scipy.signal as signal
-import matplotlib.pyplot as plt
 
 def equalnptsdelta(seism1,seism2):
     'Compare duration and sampling frequency of two seismograms'
@@ -14,6 +13,12 @@ def equalnptsdelta(seism1,seism2):
 class seismogram(object):
     ''' 
     A simple class that deals with seismograms
+    Attributes are:
+        depvar: seismogram data
+        delta: sampling step
+        npts: number of samples
+        spec: flag indicating if depvar is given in the time domain (spec=False) 
+              or in the frequency domain (spec=True)
     '''
     def __init__(self,ifile=None,delta=None):
         '''
@@ -71,8 +76,8 @@ class seismogram(object):
 
     def fft(self):
         '''
-        Compute fourier transform and return frequency and spectrum vectors
-        Outputs: Freq, Seismogram spectrum
+        Compute fourier transform and return the seismogram spectrum
+        Output: Seismogram spectrum in the frequency domain (type: seismogram)
         '''
         spectrum = self.copy()
         spectrum.spec = True
@@ -81,6 +86,18 @@ class seismogram(object):
         # All done
         return spectrum
 
+    def ifft(self):
+        '''
+        Compute the inverse fourrier transform and returns the seismogram spectrum
+        Output: Seismogram in the time domain (type: seismogram)
+        '''
+        seis = self.copy()
+        seis.spec = False
+        seis.depvar = np.fft.irfft(self.depvar) 
+        
+        # All done
+        return seis
+        
     def freq(self):
         '''
         Returns the frequency vector of the current data
@@ -108,6 +125,9 @@ class seismogram(object):
                 s.plot(color='r') or s.plot(color='red') will plot the seismogram with a red line
         Use plt.show() to show the corresponding figure
         '''
+
+        # Import the matplotlib module
+        import matplotlib.pyplot as plt
 
         # Check attributes        
         assert not self.isempty(),'Some attributes are missing (e.g., npts, delta, depvar)'
