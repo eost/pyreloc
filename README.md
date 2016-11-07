@@ -12,12 +12,13 @@ To get pyreloc, use the following git command:
 ```
 git clone https://github.com/eost/pyreloc.git
 ```
-or download the module directly from [https://github.com/eost/pyreloc.git].
+or download the module directly from https://github.com/eost/pyreloc.git
 
-The pyreloc directory must be placed in a directory pointed by the PYTHONPATH environment variable. You can modify the environment variable in your .bashrc using
+The pyreloc directory must be placed in a directory pointed by the PYTHONPATH environment variable. You can modify the environment variable in your .bashrc by adding the line:
 ```
 export PYTHONPATH=path_to_the_directory_including_pyreloc:$PYTHONPATH
 ```
+
 
 To use pyreloc, simply import the pyreloc module
 ```
