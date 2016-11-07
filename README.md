@@ -1,5 +1,5 @@
 # pyreloc
-A simple project to perform earthquake relocation (for student projets).
+A simple module to perform earthquake relocation (for student projets).
 
 ## Dependencies
 - python2 or python3
