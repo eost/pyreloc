@@ -29,4 +29,4 @@ or if you want to import the seismogram class:
 from pyreloc import seismogram
 ```
 
-For now, the module only includes the seismogram class (the class used to deal with seismograms).
+For now, the module only includes "seismogram" (i.e., the class used to deal with seismic waveforms).
