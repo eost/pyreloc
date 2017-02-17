@@ -1,6 +1,7 @@
 # Import modules
 import os
 import numpy as np
+import h5py
 from copy import deepcopy
 import scipy.signal as signal
 
@@ -10,34 +11,45 @@ def equalnptsdelta(seism1,seism2):
         return False
     return True
 
+def stationsinhdf5(ifile):
+    '''
+    List stations in hdf5 file
+    '''
+    f = h5py.File(ifile,'r')
+    sta_lst = list(f['STATIONS'])
+    f.close()
+    return sta_lst
+
 class seismogram(object):
     ''' 
     A simple class that deals with seismograms
     Attributes are:
         depvar: seismogram data
-        delta: sampling step
         npts: number of samples
         spec: flag indicating if depvar is given in the time domain (spec=False) 
               or in the frequency domain (spec=True)
     '''
-    def __init__(self,ifile=None,delta=None):
+    def __init__(self,ifile=None,stnm=None):
         '''
         Optional Args:
             - ifile: imput data file
-            - delta: sampling time step
+            - stnm: name of station to be read
         '''
-        if ifile is not None:
-            self.read(ifile,delta)
+        if ifile is not None and stnm is not None:
+            self.read(ifile,stnm)
         else:
             self.depvar = None
             self.delta  = None
             self.npts   = None
+            self.stnm   = None
+            self.cmpnm  = None
         self.spec   = False
         self.__name__='Seismogram'
         # All done
         return
-
-    def read(self,ifile,delta):
+        
+    
+    def readdat(self,ifile,delta):
         '''
         Read dat file
         '''
@@ -47,6 +59,27 @@ class seismogram(object):
         self.npts  = len(self.depvar)
         # All done
         return
+
+    def read(self,ifile,stnm):
+        '''
+        Read dat file
+        '''
+        # Check if file is here
+        assert os.path.exists(ifile), 'Cannot find '+ifile
+        # Open file and check that the station is available
+        f = h5py.File(ifile,'r')
+        pathS = '/STATIONS/'+stnm
+        assert pathS in f, 'Cannot find station %s in %s'%(stnm,ifile)
+        # Read seismic trace
+        pathT = pathS+'/Trace'
+        self.depvar = np.array(f[pathT])
+        self.stnm   = stnm
+        self.cmpnm  = f[pathS].attrs['CMPNT']
+        self.delta = 1./float(f[pathT].attrs['Fs'])
+        self.npts  = len(self.depvar)
+        f.close()
+        # All done
+        return    
 
     def filter(self, freq, order=4, btype='lowpass'):
         '''
